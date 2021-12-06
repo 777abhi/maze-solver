@@ -5,28 +5,31 @@ let upW = "text=arrow_upward";
 let downW = "text=arrow_downward";
 let leftW = "text=arrow_back";
 let rightW = "text=arrow_forward";
-let lastConsoleLog: any;
-let socketToken: any;
+
+let mazePointer;
+let mazePointerX, mazePointerY;
+
+let backTrack = [];
 let twoWaytrackerPosition = [];
 let allMoves = [];
-let i = 1;
+let moveBackBy = 1;
+
+let greenPresent = true;
+
 
 test("Automation Bot should complete the treseure hunt", async ({ page }) => {
-  await page.goto('/c/crystal_maze');
+  await page.goto("/c/crystal_maze");
 
-  let greenPresent = true;
-  var backTrack = [];
 
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
 
   while (greenPresent) {
-    let mazePointer = await getLocationDetails(
+    mazePointer = await getLocationDetails(
       page,
       "//td[contains(@class, 'deep-purple')]"
     );
 
-    let mazePointerX, mazePointerY;
-
+  
     if (mazePointer.length < 18) {
       //example - x0 y2 deep-purple
       mazePointerX = mazePointer.substring(1, 2);
@@ -64,35 +67,35 @@ test("Automation Bot should complete the treseure hunt", async ({ page }) => {
       await page.click(upW);
       allMoves.push("up");
       backTrack.push(lookUp);
-      i = 1;
+      moveBackBy = 1;
     } else if (lookRight.includes("grey") || lookRight.includes("green")) {
       await page.click(rightW);
       allMoves.push("right");
       backTrack.push(lookRight);
-      i = 1;
+      moveBackBy = 1;
     } else if (lookLeft.includes("grey") || lookLeft.includes("green")) {
       await page.click(leftW);
       allMoves.push("left");
       backTrack.push(lookLeft);
-      i = 1;
+      moveBackBy = 1;
     } else if (lookDown.includes("grey") || lookDown.includes("green")) {
       await page.click(downW);
       allMoves.push("down");
       backTrack.push(lookDown);
-      i = 1;
+      moveBackBy = 1;
     } else {
-      if (allMoves[allMoves.length - i] == "right") {
+      if (allMoves[allMoves.length - moveBackBy] == "right") {
         await page.click(leftW);
-        i = i + 1;
-      } else if (allMoves[allMoves.length - i] == "left") {
+        moveBackBy = moveBackBy + 1;
+      } else if (allMoves[allMoves.length - moveBackBy] == "left") {
         await page.click(rightW);
-        i = i + 1;
-      } else if (allMoves[allMoves.length - i] == "up") {
+        moveBackBy = moveBackBy + 1;
+      } else if (allMoves[allMoves.length - moveBackBy] == "up") {
         await page.click(downW);
-        i = i + 1;
-      } else if (allMoves[allMoves.length - i] == "down") {
+        moveBackBy = moveBackBy + 1;
+      } else if (allMoves[allMoves.length - moveBackBy] == "down") {
         await page.click(upW);
-        i = i + 1;
+        moveBackBy = moveBackBy + 1;
       }
     }
 
@@ -105,10 +108,6 @@ test("Automation Bot should complete the treseure hunt", async ({ page }) => {
           twoWaytrackerPosition.push(element);
         }
       }
-    });
-
-    let killLoop = [lookUp, lookDown, lookLeft, lookRight];
-    killLoop.forEach((element) => {
       if (element.includes("green")) {
         greenPresent = false;
       }
@@ -117,8 +116,7 @@ test("Automation Bot should complete the treseure hunt", async ({ page }) => {
   await page.click('button:has-text("Submit")');
 });
 
-//All Business functions
-
+//All functions
 async function getLocationDetails(page, locator) {
   return await page.getAttribute(locator, "class");
 }
