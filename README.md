@@ -1,5 +1,5 @@
 # maze-solver
-write an automation script to solve a simple maze
+An automation script to solve a simple maze
 
 # Pre-requisite
 ### Install NodeJS and Git from below links befor proceeding with below commands-
@@ -8,7 +8,7 @@ write an automation script to solve a simple maze
  - [Python 3 with pip](https://www.python.org/downloads/)
 
 # Clone repo
-git clone 
+git clone https://github.com/777abhi/maze-solver.git
 
 # Install all dependencies 
 npm install

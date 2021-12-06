@@ -1,4 +1,4 @@
-//treasure-flow.spec.ts
+//maze-solver-bot.spec.ts
 const { test, expect } = require("@playwright/test");
 
 let upW = "text=arrow_upward";
