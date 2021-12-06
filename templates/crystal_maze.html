@@ -1,0 +1,151 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="row center-align">
+  <div class="col s12">
+      <div class="card maincard">
+        <div class="card-content">
+          <span class="card-title"><h2>Crystal Maze</h2></span>
+          <div class="row">
+            <div class="col s12 center-align">
+              <div class="row">
+                <div class="col s12 center-align">
+                  Use arrow buttons bellow to move purple box in to the green exit in the maze and click submit button to go to next clue.
+                </div>
+              </div>
+              <div class="row">
+                <div class="col s12 center-align">
+                  <a class="btn light-blue darken-4" onclick="up();"><i class="large material-icons">arrow_upward</i></a>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col s12 center-align">
+                <a class="btn light-blue darken-4" onclick="left();"><i class="large material-icons">arrow_back</i></a>
+                  <a class="btn light-blue darken-4" onclick="down();"><i class="large material-icons">arrow_downward</i></a>
+                  <a class="btn light-blue darken-4" onclick="right();"><i class="large material-icons">arrow_forward</i></a>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col s12 center-align">
+                  <form id="crystalMazeForm" name="crystalMazeForm" action="/r/crystal_maze" method="POST">
+                    <input type="hidden" id="crystalMazePath" name="crystalMazePath"></input>
+                  </form>
+                  <button id="crystalMazeFormSubmit" class="btn deep-orange darken-4">Submit</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col s12 center-align">
+              <table id="maze" class="striped" style="max-width: 500px; margin:auto;">
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+<script src='/static/cm/{{p}}.js'></script>
+<script>
+  var direction = "";
+  var end = ""; 
+
+  $(document).ready(function(){
+      fillMaze(data);
+    });
+
+  function fillMaze(data){
+          y = 0;
+          data.forEach(function(row){
+              tr = "<tr>";
+              x = 0;
+              row.forEach(function(cell){
+                  tr += "<td class='x"+x+" y"+y+" ";
+                  if(cell == 1){
+                      tr += "black";
+                  }else if (cell == 2){
+                      tr += "blue-grey";
+                  }else if(cell == 3){
+                      tr += "green";
+                      end = ".x" + x + ".y" + y;
+                  }else if(cell == 4){
+                      tr += "deep-purple";
+                  }
+                  tr += "'></td>";
+                  x+=1;
+                });
+                tr += "</tr>";
+                $("#maze").append(tr);
+                y+=1;
+            });
+    }
+
+  function right(){
+      currentElm = $(".deep-purple")[0];
+      newElm = $(".x"+(currentPosX()+1) + ".y" + currentPosY());
+      if(newElm.hasClass("blue-grey") || newElm.hasClass("green")){
+          $(newElm).removeClass("blue-grey");
+          $(newElm).removeClass("green");
+          $(newElm).addClass("deep-purple");
+          $(currentElm).removeClass("deep-purple");
+          $(currentElm).addClass("blue-grey");
+        }
+      direction += "r";
+    }
+  function left(){
+      currentElm = $(".deep-purple")[0];
+      newElm = $(".x"+(currentPosX()-1) + ".y" + currentPosY());
+      if(newElm.hasClass("blue-grey") || newElm.hasClass("green")){
+          $(newElm).removeClass("blue-grey");
+          $(newElm).removeClass("green");
+          $(newElm).addClass("deep-purple");
+          $(currentElm).removeClass("deep-purple");
+          $(currentElm).addClass("blue-grey");
+        }
+      direction += "l";
+    }
+  function up(){
+      currentElm = $(".deep-purple")[0];
+      newElm = $(".x"+currentPosX() + ".y" + (currentPosY()-1));
+      if(newElm.hasClass("blue-grey") || newElm.hasClass("green")){
+          $(newElm).removeClass("blue-grey");
+          $(newElm).removeClass("green");
+          $(newElm).addClass("deep-purple");
+          $(currentElm).removeClass("deep-purple");
+          $(currentElm).addClass("blue-grey");
+        }
+      direction += "u";
+    }
+  function down(){
+      currentElm = $(".deep-purple")[0];
+      newElm = $(".x"+currentPosX() + ".y" + (currentPosY()+1));
+      if(newElm.hasClass("blue-grey") || newElm.hasClass("green")){
+          $(newElm).removeClass("blue-grey");
+          $(newElm).removeClass("green");
+          $(newElm).addClass("deep-purple");
+          $(currentElm).removeClass("deep-purple");
+          $(currentElm).addClass("blue-grey");
+        }
+      direction += "d";
+    }
+  function currentPos(){
+      var classes = $(".deep-purple").attr("class").split(/\s+/);
+      var x = parseInt(classes.find(el => el.startsWith("x")).replace("x", ""));
+      var y = parseInt(classes.find(el => el.startsWith("y")).replace("y", ""));
+      return [x,y]
+    }
+  function currentPosX(){
+      return currentPos()[0];
+  }
+  function currentPosY(){
+      return currentPos()[1];
+  }
+
+  document.getElementById("crystalMazeFormSubmit").onclick = function(){
+      document.getElementById("crystalMazePath").value = direction;
+      console.log(end);
+      if($(end).hasClass("deep-purple")){
+          document.getElementById("crystalMazeForm").submit();
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,12 @@
+{
+  "devDependencies": {
+    "@playwright/test": "1.17.1",
+    "playwright": "1.17.1"
+  },
+  "scripts": {
+    "start": "python3 http-server.py",
+    "test": "npx playwright test --config=playwright.config.ts",
+    "npm run test:debug": "npx playwright test --config=playwright.config.ts --debug",
+    "npm run test:report:html": "npx playwright test --reporter=html"
+  }
+}
